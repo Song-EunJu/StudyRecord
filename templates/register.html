@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Study Planner</title>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+             integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+
+        <!-- JS -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+                integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+                integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+                integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+
+        <!-- 구글폰트 -->
+        <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
+
+        <!-- css 연결 -->
+
+	    <link rel="stylesheet" href="../static/scr.css?aftera" type="text/css">
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script>
+            function register(){
+                $.ajax({
+                    type:'POST',
+                    url:'/api/register',
+                    data: {
+                        'id_give': $('#userId').val(),
+                        'pw_give': $("#password").val(),
+                        'nick_give': $('#nickname').val()
+                    },
+                    success:function(response){
+                        if(response['result']=='success') {
+                            alert('회원가입 완료');
+                            window.location.href='/login'
+                        }
+                        else {
+                            alert(response['msg']);
+
+                            // if(response['result']=='fail_id' || response['result']=='fail_nick') {
+                            //     window.location.reload();
+                            //     return;
+                            // }
+
+                           // 왜 안될까요?~
+                            if(response['result']=='fail_id') {
+                                $('#userId').val('');
+                                $('#userId').focus();
+                                return ;
+                            }
+                            else if(response['result']=='fail_nick') {
+                                $('#nickname').val('');
+                                $('#nickname').focus();
+                                return ;
+                            }
+                        }
+                    }
+                });
+            }
+        </script>
+    </head>
+    <body>
+        <div class="wrap">
+            <div class="title">
+                <h1>Study Planner</h1>
+            </div>
+
+            <div class="main_comment">
+                <div>RESISTER</div>
+            </div>
+
+            <div class="login">
+                  <div class="container">
+                    <div id="login-row" class="row justify-content-center align-items-center">
+                        <div id="login-column" class="col-md-6">
+                            <div id="login-box" class="col-md-12">
+                                <form id="login-form" class="form" action="" method="post">
+                                    <h3 class="text-center text-white pt-5">Register</h3>
+                                    <div class="form-group">
+                                        <label for="userId" class="text-info">UserId:</label><br>
+                                        <input type="text" name="userId" id="userId" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="password" class="text-info">Password:</label><br>
+                                        <input type="password" name="password" id="password" class="form-control">
+                                    </div>
+                                     <div class="form-group">
+                                        <label for="nickname" class="text-info">Nickname:</label><br>
+                                        <input type="text" name="nickname" id="nickname" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="button" name="submit" class="btn btn-info btn-md" value="submit" onclick="register()">
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                     </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

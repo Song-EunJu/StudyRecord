@@ -1,0 +1,18 @@
+import { Calendar } from '@fullcalendar/core';
+import dayGridPlugin from '@fullcalendar/daygrid';
+...
+let calendar = new Calendar(calendarEl, {
+  plugins: [ dayGridPlugin ],
+  initialView: 'dayGridMonth'
+});
+...
+
+<link href='fullcalendar/main.css' rel='stylesheet' />
+<script src='fullcalendar/main.js'></script>
+<script>
+...
+var calendar = new FullCalendar.Calendar(calendarEl, {
+  initialView: 'dayGridMonth'
+});
+...
+</script>

@@ -1,0 +1,20 @@
+body {
+    background-color: lightblue;
+    font-family: 'Song Myung', serif;
+}
+
+
+.wrap{
+    width : 500px;
+    margin : 0 auto;
+    text-align:center;
+}
+
+.login{
+    margin-top:40px;
+}
+
+
+.title {
+    margin-top : 20px;
+}
