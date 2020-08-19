@@ -24,7 +24,7 @@
 
         <!-- css 연결 -->
 
-	    <link rel="stylesheet" href="../static/scr.css?aftera" type="text/css">
+	    <link rel="stylesheet" href="../static/scr.css" type="text/css">
         <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script>
@@ -38,19 +38,13 @@
                         'nick_give': $('#nickname').val()
                     },
                     success:function(response){
+                        console.log(response['nickname']);
                         if(response['result']=='success') {
                             alert('회원가입 완료');
                             window.location.href='/login'
                         }
                         else {
                             alert(response['msg']);
-
-                            // if(response['result']=='fail_id' || response['result']=='fail_nick') {
-                            //     window.location.reload();
-                            //     return;
-                            // }
-
-                           // 왜 안될까요?~
                             if(response['result']=='fail_id') {
                                 $('#userId').val('');
                                 $('#userId').focus();
@@ -73,9 +67,6 @@
                 <h1>Study Planner</h1>
             </div>
 
-            <div class="main_comment">
-                <div>RESISTER</div>
-            </div>
 
             <div class="login">
                   <div class="container">

@@ -52,7 +52,7 @@
             });
 
             $(document).ready(function() {
-                  min = 1; // Minimum of 0
+                  min = -1; // Minimum of 0
                   max = 10; // Maximum of 10
                   $('.count').prop('disabled', true);
                   $(".minus").on("click", function() {
@@ -91,7 +91,7 @@
             function load_user_info() {
                 $.ajax({
                     type: "GET",
-                    url: "/api/index",
+                    url: "/api/nickname",
                     headers: {'token_give': $.cookie('token')},
                     data: {},
                     success: function (response) {
@@ -123,14 +123,36 @@
                 }
             }
 
+            let count=0;
+
+            function button_count(){
+                count++;
+            }
+
             function setTime(){
-                if($('.setTime').css('display')=='none')
+                count=0;
+                $.ajax({
+                    type:'POST',
+                    url :'/api/timeRecord',
+                    data:{'timeSet_give' : $('#myNumber').val(), 'count_give':count},
+                    headers: {'token_give': $.cookie('token')},
+                    success:function(response){
+                        if(response['result']=='success') {
+                            alert('시간 설정이 완료되었습니다');
+                        }
+                        else
+                            alert(response['result']);
+                    }
+                })
+
+                if($('.setTime').css('display')=='none') {
                     $('.setTime').show();
+                }
                 else {
                     $('.setTime').hide();
                 }
-            }
 
+            }
         </script>
 
     </head>
@@ -170,11 +192,11 @@
             <div class="setTime" style="display:none">
               <div class="input-group spinner">
                 <div class="input-group-prepend">
-                  <button class="btn text-monospace minus" type="button">-</button>
+                  <button class="btn text-monospace minus" onclick="button_count()" type="button">-</button>
                 </div>
-                <input type="number" class="count form-control" min="1" max="10" step="1" value="1">
+                <input type="number" class="count form-control" id="myNumber" min="-1" max="10" step="1" value="-1">
                 <div class="input-group-append">
-                  <button class="btn text-monospace plus" type="button">+</button>
+                  <button class="btn text-monospace plus" onclick="button_count()" type="button">+</button>
                 </div>
               </div>
             </div>

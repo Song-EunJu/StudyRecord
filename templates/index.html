@@ -51,7 +51,7 @@
             function load_user_info(){
                 $.ajax({
                   type: "GET",
-                  url: "/api/index",
+                  url: "/api/nickname",
                   headers: { 'token_give' : $.cookie('token') },
                   data: {},
                   success: function(response){
