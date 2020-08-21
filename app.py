@@ -16,15 +16,15 @@ import jwt
 import datetime
 import hashlib
 
-@app.route('/')
-def home():
-    return render_template('index.html')
+# @app.route('/')
+# def home():
+#     return render_template('index.html')
 
 @app.route('/login')
 def login():
     return render_template('login.html')
 
-@app.route('/main')
+@app.route('/')
 def main():
     return render_template('main.html')
 
@@ -101,14 +101,13 @@ def api_time():
     time_receive = request.form['timeSet_give']
     count_receive = request.form['count_give']
     token_receive = request.headers['token_give']
+    print(count_receive)
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
 
-        if count_receive == 0:
-            print('카운트')
+        if count_receive == '0':
             return jsonify({'result':'None'})
         else:
-            print(count_receive)
             if time_receive >= '0':
                 user = db.time.find_one({'id': payload['id']})
                 if user is not None:  #id가 있으면 덮어쓰기

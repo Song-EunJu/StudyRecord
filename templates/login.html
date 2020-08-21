@@ -47,7 +47,7 @@
                         if(response['result']=='success'){
                             $.cookie('token',response['token']);
                             alert('로그인 완료');
-                            window.location.href='/main'
+                            window.location.href='/'
                         }
                         else {
                             alert(response['msg']);
