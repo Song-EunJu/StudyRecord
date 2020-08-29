@@ -32,6 +32,10 @@ def main():
 def register():
     return render_template('register.html')
 
+# @app.route('/calendar')
+# def calendar():
+#     return render_template('fullcalendar.html')
+
 @app.route('/api/register', methods=['POST'])
 def api_register():
     id_receive = request.form['id_give']
@@ -121,6 +125,14 @@ def api_time():
                 return jsonify({'result': 'fail <0' })
     except jwt.ExpiredSignatureError:
         return jsonify({'result': 'fail time'})
+
+@app.route('/api/calendar',methods=['POST'])
+def api_calendar():
+    title_receive = request.form['title_give']
+    # date_receive = request.form['date_give']
+    db.event.insert_one({'title': title_receive})
+
+    return jsonify({'result':'success'})
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
