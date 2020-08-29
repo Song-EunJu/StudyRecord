@@ -44,9 +44,9 @@
         <!--- 달력 --->
         <link href='static/fullcalendar.css' rel='stylesheet' />
         <link href='static/fullcalendar.print.css' rel='stylesheet' media='print' />
-        <script src='static/jquery-ui.custom.min.js' type="text/javascript"></script>
         <script src='static/jquery-1.10.2.js' type="text/javascript"></script>
 
+        <script src='static/jquery-ui.custom.min.js' type="text/javascript"></script>
         <script src='static/fullcalendar.js' type="text/javascript"></script>
 
         <!--- 쿠키 --->
@@ -137,7 +137,7 @@
                             calendar.fullCalendar('unselect');
 
                             // 현재날짜 출력됨
-                            var moment = $('#calendar').fullCalendar('getDate');
+                            let moment = $('#calendar').fullCalendar('getDate');
                             console.log(moment)
 
                             $.ajax({
