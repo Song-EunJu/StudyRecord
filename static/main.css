@@ -1,5 +1,5 @@
 body {
-    background-color: lightblue;
+    background-color: indianred;
     font-family: 'Song Myung', serif;
 }
 
@@ -9,12 +9,12 @@ h1{
 h5{
     font-size:28px;
 }
+
 .wrap{
     width : 500px;
     margin : 0 auto;
     text-align:center;
     font-size:15px;
-
 }
 
 .login{
@@ -69,6 +69,10 @@ textarea{
 .spinner input:disabled {
     background-color: white;
 }
+.content{
+    margin-top:30px
+}
+
 
 /**,:active{*/
 /*	outline: none;*/

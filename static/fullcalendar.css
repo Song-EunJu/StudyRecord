@@ -141,7 +141,7 @@ html .fc,
 }
 
 .fc-cell-overlay { /* semi-transparent rectangle while dragging */
-	background: #bce8f1;
+	background: #ff9f89;
 	opacity: .3;
 	filter: alpha(opacity=30); /* for IE */
 	}
@@ -273,12 +273,15 @@ html .fc,
 .fc-event {
 	border: 1px solid #FFF; /* default BORDER color */
 	background-color: #FFF; /* default BACKGROUND color */
-	color: #919191;               /* default TEXT color */
+	color: #333333;               /* default TEXT color */
 	font-size: 12px;
 	cursor: default;
 }
 .fc-event.chill{
     background-color: #f3dcf8;
+}
+.fc-event.yellow{
+	background-color: #dffc85;
 }
 .fc-event.info{
     background-color: #c6ebfe;

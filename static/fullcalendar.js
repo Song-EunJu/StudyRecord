@@ -2378,7 +2378,7 @@ function BasicView(element, calendar, viewName) {
 		html +=
 			"<td" +
 			" class='" + classNames.join(' ') + "'" +
-			" data-date='" + formatDate(date, 'yyyy-MM-dd') + "'" +
+			" data-date='" + formatDate(date, 'yyyy-MM-ddg') + "'" +
 			">" +
 			"<div>";
 
