@@ -342,27 +342,49 @@ def api_graph():
 def api_setPlan():
     token_receive = request.headers['token_give']
     plan_receive = request.form['plan']
+    prop_receive = request.form['prop']
+    print(prop_receive)
+    print(1)
 
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        db.plan.insert_one({'id':payload['id'],'plan':plan_receive})
-        plans = list(db.plan.find({'id':payload['id']},{'_id':0}))
+        # print(prop_receive)
+        db.plan.insert_one({'id':payload['id'],'plan':plan_receive,'prop':prop_receive})
+        return jsonify({'result':'success'})
+
+        # plans = list(db.plan.find({'id':payload['id'],'prop':prop_receive},{'_id':0}))
+        # return jsonify({'result':'success','plan':plans})
+
+    except jwt.ExpiredSignatureError:
+        return jsonify({'result': 'fail time'})
+
+@app.route('/api/postPlan', methods=['POST'])
+def api_postPlan():
+    token_receive = request.headers['token_give']
+    prop_receive = request.form['prop']
+    print(prop_receive)
+    print(2)
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        plans = list(db.plan.find({'id':payload['id'],'prop':prop_receive},{'_id':0}))
         return jsonify({'result':'success','plan':plans})
 
     except jwt.ExpiredSignatureError:
         return jsonify({'result': 'fail time'})
 
-@app.route('/api/postPlan', methods=['GET'])
-def api_postPlan():
+@app.route('/api/revisePlan', methods=['GET'])
+def api_deletePlan():
     token_receive = request.headers['token_give']
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        plans = list(db.plan.find({'id':payload['id']},{'_id':0}))
-        return jsonify({'result':'success','plan':plans})
+        plans = list(db.plan.find({'id': payload['id']}, {'_id': 0}))
+        db.plan.delete({'id': payload['id']})
+
+        return jsonify({'result': 'success'})
 
     except jwt.ExpiredSignatureError:
         return jsonify({'result': 'fail time'})
 
-@app.route('/api/revisePlan', methods=['GE'])
+
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)

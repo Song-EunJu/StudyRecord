@@ -555,11 +555,11 @@
                 }
             }
 
-            function setPlan(){
+            function setPlan(prop_id){
                 $.ajax({
                     type:'POST',
                     url :'/api/setPlan',
-                    data:{'plan':$('#plan').val()},
+                    data:{'plan':$('#plan').val(),'prop':prop_id},
                     headers: {'token_give': $.cookie('token')},
                     success:function(response){
                         if(response['result']=='success') {
@@ -574,20 +574,20 @@
                 });
             }
 
-            function postPlan(){
+            function postPlan(prop_id){
                $.ajax({
-                    type:'GET',
+                    type:'POST',
                     url :'/api/postPlan',
-                    data:{},
+                    data:{'prop':prop_id},
                     headers: {'token_give': $.cookie('token')},
                     success:function(response){
+
                         if(response['result']=='success') {
                             let plans = response['plan']
-                            // $('#checklist').empty();
+                            $('#checklist').empty();
 
                             let input=`<li>&nbsp;</li>
-                                <li><input id="plan">  <button onclick="setPlan()">입력</button></li>
-                                <button onclick="revisePlan()">삭제<button></li>`;
+                            <li><input id="plan" placeholder="계획을 입력하세요">  <button onclick="setPlan(${prop_id})"  class="btn btn-dark">입력</button>  <button onclick="revisePlan()" class="btn btn-dark">삭제</button></li>`;
                             $('#checklist').append(input)
 
                             for(let i=0;i<plans.length;i++) {
@@ -606,7 +606,22 @@
             }
 
             function revisePlan(){
-                
+                $.ajax({
+                    type:'GET',
+                    url :'/api/deletePlan',
+                    data:{},
+                    headers: {'token_give': $.cookie('token')},
+                    success:function(response){
+                        if(response['result']=='success') {
+                            alert('계획 삭제가 완료되었습니다');
+                            window.location.reload();
+                        }
+                        else if(response['result']=='fail time') {
+                            alert(response['result']);
+                            window.location.href = '/login'
+                        }
+                    }
+                });
             }
         </script>
 
@@ -648,6 +663,7 @@
                 box-shadow: 0 1px 2px #C3C3C3;
                 }
 
+
         </style>
     </head>
 
@@ -662,8 +678,8 @@
             <div class="advices"></div>
 
             <div class="Goals">
-                <button class="btn btn-warning" onclick="monthGoal();postPlan();">월간 계획</button>
-                <button class="btn btn-warning" onclick="weekGoal();">주간 계획</button>
+                <button class="btn btn-warning" id="month" onclick="monthGoal();postPlan(this.id);">월간 계획</button>
+                <button class="btn btn-warning" id="week" onclick="weekGoal();postPlan(this.id);">주간 계획</button>
                 <button class="btn btn-warning" onclick="setTime();">시간 설정</button>
                 <button class="btn btn-warning" onclick="showGraph();openClose();">공부 그래프</button>
             </div>
