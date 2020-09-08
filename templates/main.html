@@ -34,7 +34,6 @@
              integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 <!--        <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">-->
 
-
         <!-- 쿠키 사용을 위한 Jquery-cookie 임포트 -->
 <!--        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>-->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
@@ -47,12 +46,12 @@
         <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js'></script>
         <link rel="stylesheet" href="static/graph_style.css">
         <link rel="icon" href="data:;base64,iVBORw0KGgo=">
-        <script src='static/graph.js' type="text/javascript"></script>
+<!--        <script src='static/graph.js' type="text/javascript"></script>-->
 
 <!--        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>-->
 <!--        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
 
-
+        <link href='static/checklist.css' rel="stylesheet">
 
         <!--- 달력 --->
         <link href='static/fullcalendar.css' rel='stylesheet' />
@@ -65,7 +64,9 @@
 
         <!--- 쿠키 --->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
-<!--        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.4.0/moment-timezone.min.js"></script>-->
+
+
+
 
         <script>
 
@@ -451,21 +452,18 @@
             }
 
             function monthGoal() {
-                if ($('.setPlan').css('display') == 'none') {
-                    // $('.panel-heading').text('월간 계획을 세워보세요!');
-                    $('.setPlan').show();
+                if ($('#checklist').css('display') == 'none') {
+                    $('#checklist').show();
                 } else {
-                    $('.setPlan').hide();
+                    $('#checklist').hide();
                 }
             }
 
             function weekGoal(){
-                if($('.setPlan').css('display') == 'none'){
-                    $('.panel-heading').text('주간 계획을 세워보세요!');
-                    $('.setPlan').show();
-                }
-                else {
-                    $('.setPlan').hide();
+                if ($('#checklist').css('display') == 'none') {
+                    $('#checklist').show();
+                } else {
+                    $('#checklist').hide();
                 }
             }
 
@@ -501,7 +499,6 @@
                 }
             }
 
-
             function showGraph() {
                 $.ajax({
                     type: 'GET',
@@ -521,8 +518,6 @@
                                     "value": com
                                 }
                                 seedData.push(sample)
-                                console.log(seedData[0].value)
-
                             }
 
                             if (eng != 0) {
@@ -532,7 +527,6 @@
                                     "value": eng
                                 }
                                 seedData.push(sample)
-                                // console.log(seedData[1].label)
                             }
                             if (sto != 0) {
                                 let sample = {
@@ -541,7 +535,6 @@
                                     "value": sto
                                 }
                                 seedData.push(sample)
-                                // console.log(seedData[2].label)
                             }
                             for (let i = 0; i < seedData.length; i++)
                                 console.log(seedData[i].value)
@@ -560,6 +553,24 @@
                 } else {
                     $(".content").show();
                 }
+            }
+
+            function setPlan(){
+                $.ajax({
+                    type:'POST',
+                    url :'/api/setPlan',
+                    data:{'plan':$('#plan').val()},
+                    headers: {'token_give': $.cookie('token')},
+                    success:function(response){
+                        if(response['result']=='success') {
+                            alert('계획 설정이 완료되었습니다');
+                        }
+                        else if(response['result']=='fail time') {
+                            alert(response['result']);
+                            window.location.href = '/login'
+                        }
+                    }
+                })
             }
 
         </script>
@@ -613,8 +624,7 @@
                 <h5><span id="nickname"></span>님 환영합니다</h5>
             </div>
 
-            <div class="advices">
-            </div>
+            <div class="advices"></div>
 
             <div class="Goals">
                 <button class="btn btn-warning" onclick="monthGoal();">월간 계획</button>
@@ -623,25 +633,30 @@
                 <button class="btn btn-warning" onclick="showGraph();openClose();">공부 그래프</button>
             </div>
 
-            <div class="setPlan" style="display:none">
-                <textarea class="plan"></textarea>
+            <div id="container" >
+              <ul id="checklist" style="display:none">
+                <li>&nbsp;</li>
+                  <li>
+                      <input id="plan"><button onclick="setPlan()">입력</button>
+                  </li>
+                <li>
+                  <input type="checkbox" checked="checked" id="checkbox1"/><label for="checkbox1">C#</label>
+                </li>
+                <li>
+                  <input type="checkbox" checked="checked" id="checkbox5"/><label for="checkbox5">C++/Java</label>
+                </li>
+                <li>
+                  <input type="checkbox" id="checkbox6"/><label for="checkbox6">EMPLOYED - <span style="color: red;">click here</span></label>
+                </li>
+                <li>
+                  <input type="checkbox" id="checkbox7"/><label for="checkbox7"></label>
+                </li>
+                <li>
+                  &nbsp;
+                </li>
+              </ul>
             </div>
 
-
-<!--            <div class="setPlan" style="display:none">-->
-<!--             <div class="row">-->
-<!--              <div class="col-md-4" >-->
-<!--               <div class="panel panel-primary">-->
-<!--                <div class="panel-heading"></div>-->
-<!--                 <div class="panel-body">-->
-<!--                  <div class="right">-->
-<!--                      <textarea class="plan"></textarea>-->
-<!--                  </div>-->
-<!--                  </div>-->
-<!--                </div>-->
-<!--               </div>-->
-<!--              </div>-->
-<!--             </div>-->
 
             <div class="setTime" style="display:none">
               <div class="input-group spinner">
@@ -659,7 +674,7 @@
 
         <div id='wrap'>
             <div id='calendar'></div>
-            <div style='clear:both'></div>
+<!--            <div style='clear:both'></div>-->
         </div>
 
 

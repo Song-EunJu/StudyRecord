@@ -2,7 +2,6 @@ from flask import Flask, render_template, jsonify, request
 from flask_restful import Resource, Api
 from flask_restful import reqparse
 import requests
-from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
@@ -12,6 +11,7 @@ import time
 from pymongo import MongoClient
 
 app = Flask(__name__)
+# Scss(app)
 
 client = MongoClient('localhost', 27017)
 db = client.dbsparta
@@ -83,9 +83,9 @@ def api_register():
     id_already = db.info.find_one({'id': id_receive})
     nick_already = db.info.find_one({'nick':nick_receive})
 
-    if id_already is not None:
+    if id_already is not None: #id가 있으면
         return jsonify({'result': 'fail_id', 'msg': '이미 있는 아이디입니다'})
-    elif nick_already is not None:
+    elif nick_already is not None: #닉네임이 있으면
         return jsonify({'result': 'fail_nick', 'msg': '이미 있는 닉네임입니다'})
     else:
         pw_hash = hashlib.sha256(pw_receive.encode('utf-8')).hexdigest()
@@ -102,7 +102,7 @@ def api_login():
 
     person = db.info.find_one({'id': id_receive, 'pw': pw_hash})
 
-    if person is not None:
+    if person is not None: #person이 있으면
         payload = {
             'id': id_receive,
             'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=1000)
@@ -338,6 +338,22 @@ def api_graph():
     except jwt.ExpiredSignatureError:
         return jsonify({'result': 'fail time'})
 
+@app.route('/api/setPlan', methods=['POST'])
+def api_plan():
+    token_receive = request.headers['token_give']
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+# @app.after_request
+# def add_header(r):
+#     """
+#     Add headers to both force latest IE rendering engine or Chrome Frame,
+#     and also to cache the rendered page for 10 minutes.
+#     """
+#     r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+#     r.headers["Pragma"] = "no-cache"
+#     r.headers["Expires"] = "0"
+#     r.headers['Cache-Control'] = 'public, max-age=0'
+#     return r
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)

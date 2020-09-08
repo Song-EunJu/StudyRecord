@@ -1,0 +1,121 @@
+/*@import url(https://fonts.googleapis.com/css?family=Unkempt:400,700);*/
+@import url(https://fonts.googleapis.com/css2?family=Song+Myung&display=swap);
+
+* {
+  padding: 0;
+  margin: 0;
+  /*margin-bottom:30px;*/
+}
+
+#container{
+  margin-bottom:30px;
+}
+body{
+  background: #DEB778;
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  -o-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+}
+
+#notepad {
+  float:left;
+  margin: 20px 5px 5px 20px;
+  width: 50%;
+  background: #fff;
+  border-left: 20px solid #D4A464;
+  max-width: 450px;
+  min-width: 400px;
+}
+
+#notepad li {
+  list-style-type: none;
+  padding: 10px 20px;
+  border-bottom: 4px solid #E9EDF0;
+  font-size: 17px;
+  /*font-family: 'Unkempt', cursive;*/
+  
+  white-space: pre-wrap; /* css-3 */
+  white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */
+  word-wrap: break-word; /* Internet Explorer 5.5+ */
+  white-space : normal;
+  
+  -webkit-transition: all 0.12s ease-in-out;
+  -moz-transition: all 0.12s ease-in-out;
+  -o-transition: all 0.12s ease-in-out;
+  transition: all 0.12s ease-in-out;
+}
+
+#notepad li img {
+  vertical-align: middle;
+  margin-right: 20px;
+}
+
+#notepad li:hover,
+#checklist li:hover {
+  background: #f4f4f4;
+  padding-left: 28px;
+}
+
+#notepad li:first-child {
+  background: #7798DD;
+  color: #ffffff;
+  text-align: center;
+  font-family: 'Song Myung', serif;
+  font-weight: bold;
+  border: none;
+}
+
+#notepad li:last-child {
+  border-bottom: 30px solid #E9EDF0;
+}
+
+input[type=checkbox] { 
+  display:none;
+}
+
+input[type=checkbox] + label:before {
+  content: url(https://i.imgur.com/xlJQa8x.png);
+
+  padding-right: 20px;
+  vertical-align: middle;
+} 
+
+input[type=checkbox]:checked + label:before {
+  content: url(https://i.imgur.com/7B711FG.png);
+} 
+
+#checklist {
+  /*float:left;*/
+  margin: 30px auto;
+  width: 100px;
+  background: #fff;
+  border-left: 5px solid #D4A464;
+  max-width: 450px;
+  min-width: 400px;
+}
+
+#checklist li {
+  padding: 0 0 10px 20px;
+  list-style-type: none;
+  font-family: 'Song Myung', serif;
+  font-size: 17px;
+  
+  white-space: pre-wrap; /* css-3 */
+  white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */
+  word-wrap: break-word; /* Internet Explorer 5.5+ */
+  white-space : normal;
+  
+  -webkit-transition: all 0.12s ease-in-out;
+  -moz-transition: all 0.12s ease-in-out;
+  -o-transition: all 0.12s ease-in-out;
+  transition: all 0.12s ease-in-out;
+}
+
+#checklist li:first-child:after {
+  content:'';
+  background: #DEB778;
+  float:right;
+  border-right: 50px solid transparent;
+  border-bottom: 50px solid #E0E5E1;
+}

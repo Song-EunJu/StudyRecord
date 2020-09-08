@@ -1,20 +1,22 @@
 // Seed data to populate the donut pie chart
-
+//
 var seedData = [
    // {
    //     "label":"컴퓨터",
    //     "value":25
-   // }
-    // {
-    //   "label": "Redux",
-    //   "value": 25
-    // }
+   // },
+   //  {
+   //    "label": "Redux",
+   //    "value": 25
+   //  }
 ];
 
+
 // Define size & radius of donut pie chart
+// <svg id="donut-chart" width="450" height="450">
 var width = 450,
     height = 450,
-    radius = Math.min(width, height) / 2;
+    radius = Math.min(width, height) / 2; //225
 
 // Define arc colours
 var colour = d3.scaleOrdinal(d3.schemeCategory20);
@@ -34,13 +36,15 @@ var pie = d3.pie()
   .sort(null);
 
 // Append SVG attributes and append g to the SVG
+// <g transform="translate(225,225)"> 원 그래프 생성
 var svg = d3.select("#donut-chart")
   .attr("width", width)
   .attr("height", height)
   .append("g")
     .attr("transform", "translate(" + radius + "," + radius + ")");
 
-// Define inner circle
+// Define inner circle 가운데 흰 원 생성
+// <circle cx="0" cy="0" r="100" fill="#fff"></circle>
 svg.append("circle")
   .attr("cx", 0)
   .attr("cy", 0)
@@ -48,35 +52,41 @@ svg.append("circle")
   .attr("fill", "#fff") ;
 
 // Calculate SVG paths and fill in the colours
-var g = svg.selectAll(".arc")
-  .data(pie(seedData))
-  .enter().append("g")
-  .attr("class", "arc")
-		
-  // Make each arc clickable 
-  // .on("click", function(d, i) {
-  //   window.location = seedData[i].link;
-  // });
 
-	// Append the path to each g
-	g.append("path")
-  	.attr("d", arc)
-  	.attr("fill", function(d, i) {
-    	return colour(i);
-  	});
+// 각 요소들을 그래프에 채우기
+function update() {
+    var g = svg.selectAll(".arc")
+        .data(pie(seedData))
+        .enter().append("g")
+        .attr("class", "arc")
 
-	// Append text labels to each arc
-	g.append("text")
-  	.attr("transform", function(d) {
-    	return "translate(" + arc.centroid(d) + ")";
-  	})
-  	.attr("dy", ".35em")
-  	.style("text-anchor", "middle")
-  	.attr("fill", "#fff")
-		.text(function(d,i) { return seedData[i].label; })
-  
-g.selectAll(".arc text").call(wrap, arcText.range([0, width]));
+    // Make each arc clickable
+    // .on("click", function(d, i) {
+    //   window.location = seedData[i].link;
+    // });
 
+    // Append the path to each g
+    g.append("path")
+        .attr("d", arc)
+        .attr("fill", function (d, i) {
+            return colour(i);
+        });
+
+    // Append text labels to each arc
+    g.append("text")
+        .attr("transform", function (d) {
+            return "translate(" + arc.centroid(d) + ")";
+        })
+        .attr("dy", ".35em")
+        .style("text-anchor", "middle")
+        .attr("fill", "#fff")
+        .text(function (d, i) {
+            return seedData[i].label;
+        })
+
+    g.selectAll(".arc text").call(wrap, arcText.range([0, width]));
+}
+update()
 // Append text to the inner circle
 svg.append("text")
   .attr("dy", "-0.5em")
@@ -117,3 +127,5 @@ function wrap(text, width) {
     }
   });
 }
+
+update()
