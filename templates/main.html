@@ -418,7 +418,6 @@
 
             window.onload = function() {
                 showAdvice();
-                postPlan();
             }
 
             function showAdvice() {
@@ -584,14 +583,17 @@
                     success:function(response){
                         if(response['result']=='success') {
                             let plans = response['plan']
+                            // $('#checklist').empty();
+
                             let input=`<li>&nbsp;</li>
-                                <li><input id="plan"> <button onclick="setPlan()">입력</button></li>`;
-                            $('#checklist *').remove();
+                                <li><input id="plan">  <button onclick="setPlan()">입력</button></li>
+                                <button onclick="revisePlan()">삭제<button></li>`;
                             $('#checklist').append(input)
 
-                            for(let i=0;i<plans.length;i++){
-                                let temp=`<li><input type="checkbox"/>
-                                <label for='checkbox'+i>${plans[i]['plan']}</label></li>`;
+                            for(let i=0;i<plans.length;i++) {
+                                let str = 'checkbox'+i;
+                                let temp = `<li><input type="checkbox" id=${str}>
+                                <label for=${str}>${plans[i]['plan']}</label></li>`;
                                 $('#checklist').append(temp);
                             }
                         }
@@ -601,6 +603,10 @@
                         }
                     }
                 });
+            }
+
+            function revisePlan(){
+                
             }
         </script>
 
@@ -665,26 +671,25 @@
             <div id="container" >
 
               <ul id="checklist" style="display:none">
-                  <li>
-                      <input id="plan"><button onclick="setPlan()">입력</button>
-                  </li>
-<!--                <li>&nbsp;</li>-->
-
+<!--                  <li>-->
+<!--                      <input id="plan"><button onclick="setPlan()">입력</button>-->
+<!--                  </li>-->
+<!--&lt;!&ndash;                <li>&nbsp;</li>&ndash;&gt;-->
 <!--                <li>-->
-<!--                  <input type="checkbox" checked="checked" id="checkbox1"/><label for="checkbox1">C#</label>-->
+<!--                  <input type="checkbox"  id="checkbox1"/><label for="checkbox1">C#</label>-->
 <!--                </li>-->
-                <li>
-                  <input type="checkbox" checked="checked" id="checkbox5"/><label for="checkbox5">C++/Java</label>
-                </li>
+<!--                <li>-->
+<!--                  <input type="checkbox" checked="checked" id="checkbox5"/><label for="checkbox5">C++/Java</label>-->
+<!--                </li>-->
 <!--                <li>-->
 <!--                  <input type="checkbox" id="checkbox6"/><label for="checkbox6">EMPLOYED - <span style="color: red;">click here</span></label>-->
 <!--                </li>-->
-                <li>
-                  <input type="checkbox" id="checkbox7"/><label for="checkbox7"></label>
-                </li>
-                <li>
-                  &nbsp;
-                </li>
+<!--                <li>-->
+<!--                  <input type="checkbox" id="checkbox7"/><label for="checkbox7">하이</label>-->
+<!--                </li>-->
+<!--                <li>-->
+<!--                  &nbsp;-->
+<!--                </li>-->
               </ul>
             </div>
 
