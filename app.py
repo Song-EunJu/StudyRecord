@@ -339,21 +339,29 @@ def api_graph():
         return jsonify({'result': 'fail time'})
 
 @app.route('/api/setPlan', methods=['POST'])
-def api_plan():
+def api_setPlan():
+    token_receive = request.headers['token_give']
+    plan_receive = request.form['plan']
+
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        db.plan.insert_one({'id':payload['id'],'plan':plan_receive})
+        plans = list(db.plan.find({'id':payload['id']},{'_id':0}))
+        return jsonify({'result':'success','plan':plans})
+
+    except jwt.ExpiredSignatureError:
+        return jsonify({'result': 'fail time'})
+
+@app.route('/api/postPlan', methods=['GET'])
+def api_postPlan():
     token_receive = request.headers['token_give']
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-# @app.after_request
-# def add_header(r):
-#     """
-#     Add headers to both force latest IE rendering engine or Chrome Frame,
-#     and also to cache the rendered page for 10 minutes.
-#     """
-#     r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-#     r.headers["Pragma"] = "no-cache"
-#     r.headers["Expires"] = "0"
-#     r.headers['Cache-Control'] = 'public, max-age=0'
-#     return r
+        plans = list(db.plan.find({'id':payload['id']},{'_id':0}))
+        return jsonify({'result':'success','plan':plans})
+
+    except jwt.ExpiredSignatureError:
+        return jsonify({'result': 'fail time'})
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)

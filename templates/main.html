@@ -418,6 +418,7 @@
 
             window.onload = function() {
                 showAdvice();
+                postPlan();
             }
 
             function showAdvice() {
@@ -564,15 +565,43 @@
                     success:function(response){
                         if(response['result']=='success') {
                             alert('계획 설정이 완료되었습니다');
+                            window.location.reload();
                         }
                         else if(response['result']=='fail time') {
                             alert(response['result']);
                             window.location.href = '/login'
                         }
                     }
-                })
+                });
             }
 
+            function postPlan(){
+               $.ajax({
+                    type:'GET',
+                    url :'/api/postPlan',
+                    data:{},
+                    headers: {'token_give': $.cookie('token')},
+                    success:function(response){
+                        if(response['result']=='success') {
+                            let plans = response['plan']
+                            let input=`<li>&nbsp;</li>
+                                <li><input id="plan"> <button onclick="setPlan()">입력</button></li>`;
+                            $('#checklist *').remove();
+                            $('#checklist').append(input)
+
+                            for(let i=0;i<plans.length;i++){
+                                let temp=`<li><input type="checkbox"/>
+                                <label for='checkbox'+i>${plans[i]['plan']}</label></li>`;
+                                $('#checklist').append(temp);
+                            }
+                        }
+                        else if(response['result']=='fail time') {
+                            alert(response['result']);
+                            window.location.href = '/login'
+                        }
+                    }
+                });
+            }
         </script>
 
         <style>
@@ -627,27 +656,29 @@
             <div class="advices"></div>
 
             <div class="Goals">
-                <button class="btn btn-warning" onclick="monthGoal();">월간 계획</button>
+                <button class="btn btn-warning" onclick="monthGoal();postPlan();">월간 계획</button>
                 <button class="btn btn-warning" onclick="weekGoal();">주간 계획</button>
                 <button class="btn btn-warning" onclick="setTime();">시간 설정</button>
                 <button class="btn btn-warning" onclick="showGraph();openClose();">공부 그래프</button>
             </div>
 
             <div id="container" >
+
               <ul id="checklist" style="display:none">
-                <li>&nbsp;</li>
                   <li>
                       <input id="plan"><button onclick="setPlan()">입력</button>
                   </li>
-                <li>
-                  <input type="checkbox" checked="checked" id="checkbox1"/><label for="checkbox1">C#</label>
-                </li>
+<!--                <li>&nbsp;</li>-->
+
+<!--                <li>-->
+<!--                  <input type="checkbox" checked="checked" id="checkbox1"/><label for="checkbox1">C#</label>-->
+<!--                </li>-->
                 <li>
                   <input type="checkbox" checked="checked" id="checkbox5"/><label for="checkbox5">C++/Java</label>
                 </li>
-                <li>
-                  <input type="checkbox" id="checkbox6"/><label for="checkbox6">EMPLOYED - <span style="color: red;">click here</span></label>
-                </li>
+<!--                <li>-->
+<!--                  <input type="checkbox" id="checkbox6"/><label for="checkbox6">EMPLOYED - <span style="color: red;">click here</span></label>-->
+<!--                </li>-->
                 <li>
                   <input type="checkbox" id="checkbox7"/><label for="checkbox7"></label>
                 </li>
