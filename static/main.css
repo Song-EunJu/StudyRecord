@@ -12,7 +12,8 @@ h5{
 
 .wrap{
     width : 500px;
-    margin : 0 auto;
+    margin : 0px auto;
+    /*margin-bottom:30px;*/
     text-align:center;
     font-size:15px;
 }
@@ -71,7 +72,8 @@ textarea{
     background-color: white;
 }
 .content{
-    margin-top:30px
+    margin-top:30px;
+    margin-bottom:30px;
 }
 
 

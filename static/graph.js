@@ -81,12 +81,11 @@ function update() {
         .style("text-anchor", "middle")
         .attr("fill", "#fff")
         .text(function (d, i) {
-            return seedData[i].label;
+            return (seedData[i].label+' '+seedData[i].value+'시간');
         })
 
     g.selectAll(".arc text").call(wrap, arcText.range([0, width]));
 }
-update()
 // Append text to the inner circle
 svg.append("text")
   .attr("dy", "-0.5em")
@@ -128,4 +127,3 @@ function wrap(text, width) {
   });
 }
 
-update()

@@ -71,16 +71,29 @@
         <script>
 
             $(document).ready(function() {
-                //
-                // var date = new Date();
-                // var d = date.getDate();
-                // var m = date.getMonth();
-                // var y = date.getFullYear();
-                //
-                // console.log(date)
-                // console.log(d)
-                // console.log(m)
-                // console.log(y)
+
+                function getValue(){
+                    $.ajax({
+                        type: 'GET',
+                        url: "/api/setValue",
+                        headers: {'token_give': $.cookie('token')},
+                        data: {},
+                        success: function (response) {
+                            if (response['result'] == 'success') {
+                                $('#myNumber').attr('value',response['value']);
+                            }
+                            else if(response['result']=='fail time') {
+                                window.location.href = '/login'
+                            }
+                            else{
+                                alert(response['result'])
+                            }
+                        }
+                    });
+                }
+
+                getValue()
+
                 function postEvent() {
                     $.ajax({
                         type: 'GET',
@@ -114,7 +127,8 @@
                                                 true
                                             )
                                             compareTime(y, m, d)
-                                        } else {
+                                        }
+                                        else {
                                             $('#calendar').fullCalendar('renderEvent',
                                                 {
                                                     title: e,
@@ -474,6 +488,7 @@
             }
 
             function setTime(){
+
                 $.ajax({
                     type:'POST',
                     url :'/api/timeRecord',
@@ -482,6 +497,7 @@
                     success:function(response){
                         if(response['result']=='success') {
                             alert('시간 설정이 완료되었습니다');
+                            $('#myNumber').prop("value",response['timeSet'])
                         }
                         else if(response['result']=='fail time') {
                             alert(response['result']);
@@ -536,8 +552,7 @@
                                 }
                                 seedData.push(sample)
                             }
-                            for (let i = 0; i < seedData.length; i++)
-                                console.log(seedData[i].value)
+                            update()
                         }
                         else if (response['result'] == 'fail time') {
                             alert(response['result']);
@@ -559,7 +574,7 @@
                 $.ajax({
                     type:'POST',
                     url :'/api/setPlan',
-                    data:{'plan':$('#plan').val(),'prop':prop_id},
+                    data:{'plan':$('#plan').val(),'prop':prop_id.id},
                     headers: {'token_give': $.cookie('token')},
                     success:function(response){
                         if(response['result']=='success') {
@@ -574,30 +589,39 @@
                 });
             }
 
-            function postPlan(prop_id){
-               $.ajax({
-                    type:'POST',
-                    url :'/api/postPlan',
-                    data:{'prop':prop_id},
-                    headers: {'token_give': $.cookie('token')},
-                    success:function(response){
+            function postPlan(prop_id) {
+                var property = prop_id
 
-                        if(response['result']=='success') {
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/postPlan',
+                    data: {'prop': prop_id},
+                    headers: {'token_give': $.cookie('token')},
+                    success: function (response) {
+
+                        if (response['result'] == 'success') {
                             let plans = response['plan']
                             $('#checklist').empty();
 
-                            let input=`<li>&nbsp;</li>
-                            <li><input id="plan" placeholder="계획을 입력하세요">  <button onclick="setPlan(${prop_id})"  class="btn btn-dark">입력</button>  <button onclick="revisePlan()" class="btn btn-dark">삭제</button></li>`;
-                            $('#checklist').append(input)
+                            if (plans != null) { //plan이 이미 있는 상태라면
+                                let input = `<li>&nbsp;</li>
+                                <li><input id="plan" placeholder="계획을 입력하세요">  <button onclick="setPlan(${property})"  class="btn btn-dark">입력</button>  <button onclick="revisePlan(${property})" class="btn btn-dark">삭제</button></li>`;
+                                $('#checklist').append(input)
 
-                            for(let i=0;i<plans.length;i++) {
-                                let str = 'checkbox'+i;
-                                let temp = `<li><input type="checkbox" id=${str}>
-                                <label for=${str}>${plans[i]['plan']}</label></li>`;
-                                $('#checklist').append(temp);
+                                for (let i = 0; i < plans.length; i++) {
+                                    let str = 'checkbox' + i;
+                                    let temp = `<li><input type="checkbox" onclick="boxCheck()" id=${str}>
+                                    <label for=${str}>${plans[i]['plan']}</label></li>`;
+
+                                    $('#checklist').append(temp);
+                                }
+
+                            } else { // plan이 없는 상태라면
+                                let input = `<li>&nbsp;</li>
+                                <li><input id="plan" placeholder="계획을 입력하세요">  <button onclick="setPlan(${response['prop_id']})"  class="btn btn-dark">입력</button>  <button onclick="revisePlan()" class="btn btn-dark">삭제</button></li>`;
+                                $('#checklist').append(input)
                             }
-                        }
-                        else if(response['result']=='fail time') {
+                        } else if (response['result'] == 'fail time') {
                             alert(response['result']);
                             window.location.href = '/login'
                         }
@@ -605,24 +629,46 @@
                 });
             }
 
-            function revisePlan(){
+            function boxCheck() {
+                let temp=
+                // var str_id = '#'+str.id
+                // console.log(str_id);
+                // // $(str_id).prop('checked')
+                // // alert(prop_checked)
+
+                if($(str_id).is(":checked")==false){
+                    var prop_checked=$(str_id).prop('checked',true)
+                    alert(prop_checked)
+                    alert(1)
+                    // console.log(str_id.checked)
+                }
+                else{
+                    var prop_checked=$(str_id).prop('checked',false)
+                    alert(prop_checked)
+                    alert(2)
+                }
+                return temp;
+            }
+
+            function revisePlan(prop_id) {
                 $.ajax({
-                    type:'GET',
-                    url :'/api/deletePlan',
-                    data:{},
+                    type: 'POST',
+                    url: '/api/revisePlan',
+                    data: {'prop': prop_id.id},
                     headers: {'token_give': $.cookie('token')},
-                    success:function(response){
-                        if(response['result']=='success') {
+                    success: function (response) {
+                        if (response['result'] == 'success') {
                             alert('계획 삭제가 완료되었습니다');
                             window.location.reload();
-                        }
-                        else if(response['result']=='fail time') {
+                        } else if (response['result'] == 'fail time') {
                             alert(response['result']);
                             window.location.href = '/login'
                         }
                     }
                 });
             }
+
+
         </script>
 
         <style>
@@ -634,8 +680,9 @@
 
             #wrap {
                 width: 1100px;
-                margin: 0 auto;
-                margin-top:20px;
+                margin: 20px auto 30px auto;
+                /*margin-top:20px;*/
+                /*margin-bottom:30px;*/
             }
 
             #external-events h4 {
@@ -685,15 +732,8 @@
             </div>
 
             <div id="container" >
-
               <ul id="checklist" style="display:none">
-<!--                  <li>-->
-<!--                      <input id="plan"><button onclick="setPlan()">입력</button>-->
-<!--                  </li>-->
-<!--&lt;!&ndash;                <li>&nbsp;</li>&ndash;&gt;-->
-<!--                <li>-->
-<!--                  <input type="checkbox"  id="checkbox1"/><label for="checkbox1">C#</label>-->
-<!--                </li>-->
+
 <!--                <li>-->
 <!--                  <input type="checkbox" checked="checked" id="checkbox5"/><label for="checkbox5">C++/Java</label>-->
 <!--                </li>-->
@@ -703,19 +743,17 @@
 <!--                <li>-->
 <!--                  <input type="checkbox" id="checkbox7"/><label for="checkbox7">하이</label>-->
 <!--                </li>-->
-<!--                <li>-->
-<!--                  &nbsp;-->
-<!--                </li>-->
               </ul>
             </div>
 
 
             <div class="setTime" style="display:none">
+
               <div class="input-group spinner">
                 <div class="input-group-prepend">
                   <button class="btn text-monospace minus" onclick="button_count();" type="button">-</button>
                 </div>
-                <input type="number" class="count form-control" id="myNumber" min="-1" max="10" step="1" value="-1">
+                <input type="number" class="count form-control" id="myNumber" min="-1" max="10" step="1" value="0">
                 <div class="input-group-append">
                   <button class="btn text-monospace plus" onclick="button_count();" type="button">+</button>
                 </div>

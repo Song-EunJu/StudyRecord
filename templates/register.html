@@ -22,13 +22,16 @@
         <!-- 구글폰트 -->
         <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
 
-        <!-- css 연결 -->
-
-	    <link rel="stylesheet" href="../static/except_main.css" type="text/css">
+        <!-- 로그인 form 연결 -->
         <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+        <link rel="stylesheet" href="../static/except_main.css" type="text/css">
+
+
         <script>
             function register(){
+                console.log('hi')
                 $.ajax({
                     type:'POST',
                     url:'/api/register',
@@ -88,7 +91,7 @@
                                         <input type="text" name="nickname" id="nickname" class="form-control">
                                     </div>
                                     <div class="form-group">
-                                        <input type="button" name="submit" class="btn btn-info btn-md" value="submit" onclick="register()">
+                                        <input type="button" name="button" class="btn btn-info btn-md" value="submit" onclick="register()">
                                     </div>
                                 </form>
                             </div>

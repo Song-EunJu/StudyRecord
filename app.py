@@ -1,19 +1,21 @@
 from flask import Flask, render_template, jsonify, request
-from flask_restful import Resource, Api
-from flask_restful import reqparse
-import requests
-from selenium import webdriver
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.keys import Keys
-import pyperclip
-import time
+# from flask_restful import Resource, Api
+# from flask_restful import reqparse
+# import requests
+# from selenium import webdriver
+# from selenium.webdriver.common.action_chains import ActionChains
+# from selenium.webdriver.common.keys import Keys
+# import pyperclip
+# import time
 
 from pymongo import MongoClient
 
 app = Flask(__name__)
 # Scss(app)
-
+# mongodb://jd06280:thddmswn99@13.125.3.68
+# client = MongoClient('mongodb://jd06280:thddmswn99@13.125.3.68', 27017)
 client = MongoClient('localhost', 27017)
+
 db = client.dbsparta
 
 #
@@ -155,14 +157,29 @@ def api_time():
                 if user is not None:  #id가 있으면 덮어쓰기
                     time = user['timeSet']
                     db.time.update_one({'timeSet': time}, {'$set': {'timeSet': time_receive}})
-                    return jsonify({'result': 'success'})
+                    return jsonify({'result': 'success','timeSet': time_receive})
                 else:  #id가 없으면
                     db.time.insert_one({'timeSet': time_receive, 'id': payload['id']})
-                    return jsonify({'result': 'success'})
+                    return jsonify({'result': 'success','timeSet': time_receive})
             else:
                 return jsonify({'result': 'fail <0' })
     except jwt.ExpiredSignatureError:
         return jsonify({'result': 'fail time'})
+
+@app.route('/api/setValue', methods=['GET'])
+def api_setTime():
+    token_receive = request.headers['token_give']
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        values = db.time.find({'id':payload['id']},{'_id':0})
+        for value in values:
+            if value['timeSet'] is not None:
+                return jsonify({'result':'success','value':value['timeSet']})
+            else:
+                return jsonify({'result':'설정된 시간이 없습니다'}) 
+    except jwt.ExpiredSignatureError:
+        return jsonify({'result': 'fail time'})
+
 
 @app.route('/api/inputEvent',methods=['POST'])
 def api_inputEvent():
@@ -290,17 +307,6 @@ def api_compareTime():
     except jwt.ExpiredSignatureError:
         return jsonify({'result': 'fail time'})
 
-# @app.route('/api/graph', methods=['GET'])
-# def api_graph():
-#     token_receive = request.headers['token_give']
-#     try:
-#         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-#         events = list(db.event.find({'id': payload['id']},{'_id':0}))
-#         # print('하이')
-#         return jsonify({'result': 'success', 'event': events})
-#     except jwt.ExpiredSignatureError:
-#         return jsonify({'result': 'fail time'})
-
 @app.route('/api/showGraph', methods=['GET'])
 def api_graph():
     token_receive = request.headers['token_give']
@@ -343,17 +349,11 @@ def api_setPlan():
     token_receive = request.headers['token_give']
     plan_receive = request.form['plan']
     prop_receive = request.form['prop']
-    print(prop_receive)
-    print(1)
 
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        # print(prop_receive)
         db.plan.insert_one({'id':payload['id'],'plan':plan_receive,'prop':prop_receive})
         return jsonify({'result':'success'})
-
-        # plans = list(db.plan.find({'id':payload['id'],'prop':prop_receive},{'_id':0}))
-        # return jsonify({'result':'success','plan':plans})
 
     except jwt.ExpiredSignatureError:
         return jsonify({'result': 'fail time'})
@@ -362,24 +362,26 @@ def api_setPlan():
 def api_postPlan():
     token_receive = request.headers['token_give']
     prop_receive = request.form['prop']
-    print(prop_receive)
-    print(2)
+
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         plans = list(db.plan.find({'id':payload['id'],'prop':prop_receive},{'_id':0}))
-        return jsonify({'result':'success','plan':plans})
+        if plans is not None:
+            return jsonify({'result':'success','plan':plans,'prop':prop_receive})
+        else:
+            return jsonify({'result':'success','prop_id':prop_receive})
 
     except jwt.ExpiredSignatureError:
         return jsonify({'result': 'fail time'})
 
-@app.route('/api/revisePlan', methods=['GET'])
+@app.route('/api/revisePlan', methods=['POST'])
 def api_deletePlan():
     token_receive = request.headers['token_give']
+    prop_receive = request.form['prop']
+
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        plans = list(db.plan.find({'id': payload['id']}, {'_id': 0}))
-        db.plan.delete({'id': payload['id']})
-
+        db.plan.delete_many({'id': payload['id'],'prop':prop_receive})
         return jsonify({'result': 'success'})
 
     except jwt.ExpiredSignatureError:
