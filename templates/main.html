@@ -2,6 +2,7 @@
 <html lang="en">
     <head>
         <title>공부록: 기록으로 남긴 공부</title>
+        <link rel="icon" type="image/png" sizes="16x16" href="static/favicon-16x16.png">
         <!-- Required meta tags -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -67,7 +68,6 @@
 
         <!--- 쿠키 --->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
-
 
 
 
@@ -619,22 +619,43 @@
                             $('#checklist').empty();
 
                             if (plans != null) { //plan이 이미 있는 상태라면
+
                                 let input = `<li>&nbsp;</li>
                                 <li><input id="plan" placeholder="계획을 입력하세요">  <button onclick="setPlan(${property})"  class="btn btn-dark">입력</button>  <button onclick="revisePlan(${property})" class="btn btn-dark">삭제</button></li>`;
                                 $('#checklist').append(input)
 
                                 for (let i = 0; i < plans.length; i++) {
                                     let str = 'checkbox' + i;
-                                    let temp = `<li><input type="checkbox" id=${str}>
-                                    <label for=${str}>${plans[i]['plan']}</label></li>`;
-                                    $('#checklist').append(temp);
+                                    let temp;
+                                    if(plans[i]['checked']=='0') { // 애초에 처음에 넣을 때는 모두 체크안된상태(0)으로 넣음
+                                        temp = `<li><input type="checkbox" id=${str}>
+                                        <label for=${str}>${plans[i]['plan']}</label></li>`;
+                                        $('#checklist').append(temp);
+                                    }
+                                    else if(plans[i]['checked']=='1') { // 체크 했으면(1) 이면 checked 속성 추가한 상태로 넣음
+                                        temp = `<li><input type="checkbox" id=${str} checked="checked">
+                                        <label for=${str}>${plans[i]['plan']}</label></li>`;
+                                        $('#checklist').append(temp);
+                                    }
 
-                                    // $('#checklist li').eq(2).click(function(){
-                                    //  $('#checklist li').eq(2).childNodes[2].attr("checked","checked")
-                                    // })
-                                    boxCheck(prop_id)
+                                    let check, plan;
+
+                                    $('#checklist li input').eq(i + 1).click(function () {
+                                        if ($('#checklist li input').eq(i + 1).attr("checked") == "checked") {
+                                            //alert('체크 해제');
+                            //체크클릭하면 그 애 출력 alert($('#checklist li label').get(i).innerText)
+                                            plan = $('#checklist li label').get(i).innerText;
+                                            $('#checklist li input').eq(i + 1).removeAttr("checked")
+                                            check=0;
+                                        }
+                                        else { //체크가 없었는데 체크선택한 경우
+                                            plan = $('#checklist li label').get(i).innerText;
+                                            $('#checklist li input').eq(i + 1).attr("checked","checked")
+                                            check=1;
+                                        }
+                                        boxCheck(prop_id,check,plan)
+                                    })
                                 }
-
                             }
                             else{
                                 let input = `<li>&nbsp;</li>
@@ -652,27 +673,24 @@
             }
 
 
-
-            function boxCheck(prop_id) {
+            function boxCheck(prop_id, check, plan) {
                   $.ajax({
                       type: 'POST',
-                      url: '/api/postPlan',
-                      data: {'prop': prop_id},
+                      url: '/api/boxCheck',
+                      data: {'prop': prop_id, 'checked':check, 'plan':plan},
                       headers: {'token_give': $.cookie('token')},
                       success: function (response) {
-                          let plans = response['plan']
-
-                          for (let i = 0; i < plans.length; i++) {
-                              let st = 'checkbox' + i;
-
+                          if(response['result']=='success'){
+                              alert('체크 반영 완료');
+                              window.location.reload();
+                          }
+                          else if(response['result']=='fail time'){
+                              alert(response['result']);
+                              window.location.href = '/login'
+                          }
                               //  $('#checklist li').eq(i + 2).click(function () {
                               //     console.log($('#checklist li').get(i + 2).innerText)
                               // })
-                              if ($('#checklist li').eq(i).attr("checked","checked") == true)
-                                  alert('체크됨');
-                              else
-                                  alert('체크 ㄴㄴ');
-                          }
                       }
                   });
             }
