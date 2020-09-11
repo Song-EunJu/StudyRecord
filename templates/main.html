@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Study Planner</title>
+        <title>공부록: 기록으로 남긴 공부</title>
         <!-- Required meta tags -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta property="og:title" content="공부하기 싫어도 어쩌니...해야지..." />
+        <meta property="og:description" content="게으른 너를 위한거야" />
+        <meta property="og:image" content="{{ url_for('static', filename='study.jpg') }}" />
 
         <!-- JS -->
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
@@ -158,8 +161,19 @@
                             'day': d
                         },
                         success: function (response) {
+                            let hour = response['hour']
+                            let goal = response['time']
                             if (response['result'] == 'success') {
-                                return;
+                                if(hour>=goal){
+                                    let date = y+'-'+m+'-'+d;
+                                    if($('.fc-day').attr("date-date")==date){
+                                        $('.fc-day').append('⭕')
+                                    }
+
+                                }
+                            }
+                            else if(response['result']=='fail'){
+                                alert(msg)
                             }
                             // else if(response['result']=='True'){
                             //     $('.fc-day-number').append('⭕')
@@ -571,6 +585,8 @@
             }
 
             function setPlan(prop_id){
+
+
                 $.ajax({
                     type:'POST',
                     url :'/api/setPlan',
@@ -598,7 +614,6 @@
                     data: {'prop': prop_id},
                     headers: {'token_give': $.cookie('token')},
                     success: function (response) {
-
                         if (response['result'] == 'success') {
                             let plans = response['plan']
                             $('#checklist').empty();
@@ -610,18 +625,25 @@
 
                                 for (let i = 0; i < plans.length; i++) {
                                     let str = 'checkbox' + i;
-                                    let temp = `<li><input type="checkbox" onclick="boxCheck()" id=${str}>
+                                    let temp = `<li><input type="checkbox" id=${str}>
                                     <label for=${str}>${plans[i]['plan']}</label></li>`;
-
                                     $('#checklist').append(temp);
+
+                                    // $('#checklist li').eq(2).click(function(){
+                                    //  $('#checklist li').eq(2).childNodes[2].attr("checked","checked")
+                                    // })
+                                    boxCheck(prop_id)
                                 }
 
-                            } else { // plan이 없는 상태라면
+                            }
+                            else{
                                 let input = `<li>&nbsp;</li>
-                                <li><input id="plan" placeholder="계획을 입력하세요">  <button onclick="setPlan(${response['prop_id']})"  class="btn btn-dark">입력</button>  <button onclick="revisePlan()" class="btn btn-dark">삭제</button></li>`;
+                                <li><input id="plan" placeholder="계획을 입력하세요">  <button onclick="setPlan(${property})"  class="btn btn-dark">입력</button>  <button onclick="revisePlan(${property})" class="btn btn-dark">삭제</button></li>`;
                                 $('#checklist').append(input)
                             }
-                        } else if (response['result'] == 'fail time') {
+
+                        }
+                        else if (response['result'] == 'fail time') {
                             alert(response['result']);
                             window.location.href = '/login'
                         }
@@ -629,25 +651,30 @@
                 });
             }
 
-            function boxCheck() {
-                let temp=
-                // var str_id = '#'+str.id
-                // console.log(str_id);
-                // // $(str_id).prop('checked')
-                // // alert(prop_checked)
 
-                if($(str_id).is(":checked")==false){
-                    var prop_checked=$(str_id).prop('checked',true)
-                    alert(prop_checked)
-                    alert(1)
-                    // console.log(str_id.checked)
-                }
-                else{
-                    var prop_checked=$(str_id).prop('checked',false)
-                    alert(prop_checked)
-                    alert(2)
-                }
-                return temp;
+
+            function boxCheck(prop_id) {
+                  $.ajax({
+                      type: 'POST',
+                      url: '/api/postPlan',
+                      data: {'prop': prop_id},
+                      headers: {'token_give': $.cookie('token')},
+                      success: function (response) {
+                          let plans = response['plan']
+
+                          for (let i = 0; i < plans.length; i++) {
+                              let st = 'checkbox' + i;
+
+                              //  $('#checklist li').eq(i + 2).click(function () {
+                              //     console.log($('#checklist li').get(i + 2).innerText)
+                              // })
+                              if ($('#checklist li').eq(i).attr("checked","checked") == true)
+                                  alert('체크됨');
+                              else
+                                  alert('체크 ㄴㄴ');
+                          }
+                      }
+                  });
             }
 
             function revisePlan(prop_id) {
@@ -667,8 +694,6 @@
                     }
                 });
             }
-
-
         </script>
 
         <style>
@@ -718,7 +743,7 @@
 
         <div class="wrap">
             <div class="title">
-                <h1>Study Planner</h1>
+                <h1>Study Record</h1>
                 <h5><span id="nickname"></span>님 환영합니다</h5>
             </div>
 
@@ -733,9 +758,10 @@
 
             <div id="container" >
               <ul id="checklist" style="display:none">
+<!--                  d="plan" placeholder="계획을 입력하세요"><button onclick="setPlan()" class="btn btn-dark">입력</button><button onclick="revisePlan()" class="btn btn-dark">삭제</button></li>-->
 
-<!--                <li>-->
-<!--                  <input type="checkbox" checked="checked" id="checkbox5"/><label for="checkbox5">C++/Java</label>-->
+<!--                  <input t<li>&nbsp;</li>-->
+<!--                  <li><input iype="checkbox" checked="checked" id="checkbox5"/><label for="checkbox5">C++/Java</label>-->
 <!--                </li>-->
 <!--                <li>-->
 <!--                  <input type="checkbox" id="checkbox6"/><label for="checkbox6">EMPLOYED - <span style="color: red;">click here</span></label>-->

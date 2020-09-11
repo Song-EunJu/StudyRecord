@@ -11,9 +11,7 @@ from flask import Flask, render_template, jsonify, request
 from pymongo import MongoClient
 
 app = Flask(__name__)
-# Scss(app)
-# mongodb://jd06280:thddmswn99@13.125.3.68
-# client = MongoClient('mongodb://jd06280:thddmswn99@13.125.3.68', 27017)
+# client = MongoClient('mongodb://test:test@13.125.3.68', 27017)
 client = MongoClient('localhost', 27017)
 
 db = client.dbsparta
@@ -135,8 +133,13 @@ def api_advice():
       {'advice': '실패란 넘어지는 것이 아니라,넘어진 자리에 머무는 것이다'},
       {'advice': '같은 실수를 두려워하되 새로운 실수를 두려워하지 마라. 실수는 곧 경험이다'},
       {'advice': '어떤 것이 당신의 계획대로 되지 않는다고해서 그것이 불필요한 것은 아니다.'},
-      {'advice': '내 자신에 대한 자신감을 잃으면 온 세상이 나의 적이 된다.'},
+      {'advice': '내가 꿈을 이루면 난 다시 누군가의 꿈이 된다.'},
+      {'advice': '목표를 낮추지 말고 노력을 높여라'},
       {'advice': '실패하는 게 두려운 게 아니라 노력하지 않는 게 두렵다.'},
+      {'advice': '오래 끄는 나태함은 진취성을 마비시킨다.'},
+      {'advice': '천천히 그리고 꾸준히 가는 자가 경주에서 승리한다.'},
+      {'advice': '우리의 인내는 우리의 힘보다 더 많은 것을 성취한다'},
+      {'advice': '성공의 비결은 초심을 잃지 않는 데 있다'},
     ]
     return jsonify({'advices':advices, 'response':'success'})
 
@@ -176,10 +179,9 @@ def api_setTime():
             if value['timeSet'] is not None:
                 return jsonify({'result':'success','value':value['timeSet']})
             else:
-                return jsonify({'result':'설정된 시간이 없습니다'}) 
+                return jsonify({'result':'설정된 시간이 없습니다'})
     except jwt.ExpiredSignatureError:
         return jsonify({'result': 'fail time'})
-
 
 @app.route('/api/inputEvent',methods=['POST'])
 def api_inputEvent():
@@ -287,22 +289,16 @@ def api_compareTime():
                 'day': day_receive
             }
             db.time.insert_one(time)
-        return jsonify({'result':'success'})
 
-        # # weeks = soup.select('#calendar > div > div > table > tbody > tr')
-        # # for week in weeks:
-        # #     days = week.select('td.fc-day')
-        # #     for day in days:
-        # #         if day['data-date'] == (year_receive+'-'+month_receive+'-'+day_receive):
-        # #             return jsonify({'result': 'True'});
-        # #         else:
-        # #             return jsonify({'result': 'False'});
-        # for set in time_set:
-        #     if set['timeSet'] is not None:  # timeSet 을 가지고 있는 애는,
-        #         if hour >= int(set['timeSet']):
-        #             return jsonify({'result': 'True'});
-        #         else:
-        #             return jsonify({'result': 'False'});
+        record = db.time.find_one({'id': payload['id'],'year': year_receive, 'month': month_receive,'day': day_receive})
+        values = db.time.find({'id': payload['id']}, {'_id': 0})
+
+        for value in values:
+            if value['timeSet'] is not None: #timeSet이 있으면
+                return jsonify({'result': 'success', 'hour': record['hour'], 'time':value['timeSet']})
+
+        return jsonify({'result':'fail', 'msg':'설정된 목표 시간이 없습니다'})
+
 
     except jwt.ExpiredSignatureError:
         return jsonify({'result': 'fail time'})
@@ -327,10 +323,6 @@ def api_graph():
                     eng_sum += int(event['title'][3:4])
                 elif event['title'][0:2] == '#주':
                     stock_sum += int(event['title'][3:4])
-
-            # print(com_sum)
-            # print(eng_sum)
-            # print(stock_sum)
 
         graphs = db.graph.find_one({'id': payload['id']},{'_id':0})
         if graphs is None:  #저장된 것이 없다면
@@ -366,7 +358,7 @@ def api_postPlan():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         plans = list(db.plan.find({'id':payload['id'],'prop':prop_receive},{'_id':0}))
-        if plans is not None:
+        if plans is not None: #해당하는 플랜이 있다면
             return jsonify({'result':'success','plan':plans,'prop':prop_receive})
         else:
             return jsonify({'result':'success','prop_id':prop_receive})
