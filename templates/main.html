@@ -60,10 +60,8 @@
         <!--- 달력 --->
         <link href='static/fullcalendar.css' rel='stylesheet' />
         <link href='static/fullcalendar.print.css' rel='stylesheet' media='print' />
-
         <script src='static/jquery-1.10.2.js' type="text/javascript"></script>
         <script src='static/jquery-ui.custom.min.js' type="text/javascript"></script>
-
         <script src='static/fullcalendar.js' type="text/javascript"></script>
 
         <!--- 쿠키 --->
@@ -74,7 +72,6 @@
         <script>
 
             $(document).ready(function() {
-
                 function getValue(){
                     $.ajax({
                         type: 'GET',
@@ -585,8 +582,6 @@
             }
 
             function setPlan(prop_id){
-
-
                 $.ajax({
                     type:'POST',
                     url :'/api/setPlan',
@@ -621,7 +616,9 @@
                             if (plans != null) { //plan이 이미 있는 상태라면
 
                                 let input = `<li>&nbsp;</li>
-                                <li><input id="plan" placeholder="계획을 입력하세요">  <button onclick="setPlan(${property})"  class="btn btn-dark">입력</button>  <button onclick="revisePlan(${property})" class="btn btn-dark">삭제</button></li>`;
+                                    <li><input id="plan" placeholder="계획을 입력하세요">  \
+                                    <button onclick="setPlan(${property})" class="btn btn-dark">입력</button> \
+                                    <button onclick="deletePlan(${property})" class="btn btn-dark">삭제</button></li>`;
                                 $('#checklist').append(input)
 
                                 for (let i = 0; i < plans.length; i++) {
@@ -629,21 +626,23 @@
                                     let temp;
                                     if(plans[i]['checked']=='0') { // 애초에 처음에 넣을 때는 모두 체크안된상태(0)으로 넣음
                                         temp = `<li><input type="checkbox" id=${str}>
-                                        <label for=${str}>${plans[i]['plan']}</label></li>`;
+                                        <label for=${str}>${plans[i]['plan']}  </label> \
+                                            <button onclick="revisePlan(${property},'${plans[i]['plan']}')" class="btn btn-outline-secondary">수정</button></li>`;
+
                                         $('#checklist').append(temp);
                                     }
                                     else if(plans[i]['checked']=='1') { // 체크 했으면(1) 이면 checked 속성 추가한 상태로 넣음
                                         temp = `<li><input type="checkbox" id=${str} checked="checked">
-                                        <label for=${str}>${plans[i]['plan']}</label></li>`;
+                                        <label for=${str}>${plans[i]['plan']}  </label> \
+                                            <button onclick="revisePlan(${property},'${plans[i]['plan']}')" class="btn btn-outline-secondary">수정</button></li>`;
                                         $('#checklist').append(temp);
                                     }
 
-                                    let check, plan;
+                                    let check, plan, revise;
 
                                     $('#checklist li input').eq(i + 1).click(function () {
                                         if ($('#checklist li input').eq(i + 1).attr("checked") == "checked") {
-                                            //alert('체크 해제');
-                            //체크클릭하면 그 애 출력 alert($('#checklist li label').get(i).innerText)
+                                         //체크클릭하면 그 애 출력 alert($('#checklist li label').get(i).innerText)
                                             plan = $('#checklist li label').get(i).innerText;
                                             $('#checklist li input').eq(i + 1).removeAttr("checked")
                                             check=0;
@@ -655,11 +654,19 @@
                                         }
                                         boxCheck(prop_id,check,plan)
                                     })
+
+                                    // $('#checklist li').not('li label').eq(i+2).click(function () {
+                                    //     var modify = prompt("'"+$('#checklist li').get(i+2).innerText+"' 계획을 어떤 계획으로 수정하시겠습니까?")
+                                    //     revise = $('#checklist li').get(i+2).innerText;
+                                    //     revisePlan(prop_id,modify,revise)
+                                    // })
                                 }
                             }
                             else{
                                 let input = `<li>&nbsp;</li>
-                                <li><input id="plan" placeholder="계획을 입력하세요">  <button onclick="setPlan(${property})"  class="btn btn-dark">입력</button>  <button onclick="revisePlan(${property})" class="btn btn-dark">삭제</button></li>`;
+                                    <li><input id="plan" placeholder="계획을 입력하세요">  \
+                                    <button onclick="setPlan(${property})" class="btn btn-dark">입력</button> \
+                                    <button onclick="deletePlan(${property})" class="btn btn-dark">삭제</button></li>`;
                                 $('#checklist').append(input)
                             }
 
@@ -681,7 +688,6 @@
                       headers: {'token_give': $.cookie('token')},
                       success: function (response) {
                           if(response['result']=='success'){
-                              alert('체크 반영 완료');
                               window.location.reload();
                           }
                           else if(response['result']=='fail time'){
@@ -695,22 +701,49 @@
                   });
             }
 
-            function revisePlan(prop_id) {
+            function revisePlan(prop_id, plan) {  // 계획 하나씩 수정 기능
+
+                var modify = prompt("'"+plan+"' 계획을 어떤 계획으로 수정하시겠습니까?")
+
                 $.ajax({
                     type: 'POST',
                     url: '/api/revisePlan',
-                    data: {'prop': prop_id.id},
+                    data: {'prop': prop_id, 'revise':modify, 'plan':plan},
                     headers: {'token_give': $.cookie('token')},
                     success: function (response) {
                         if (response['result'] == 'success') {
-                            alert('계획 삭제가 완료되었습니다');
+                            alert('계획 수정이 완료되었습니다');
                             window.location.reload();
-                        } else if (response['result'] == 'fail time') {
+                        }
+                        else if (response['result'] == 'fail time') {
                             alert(response['result']);
                             window.location.href = '/login'
                         }
                     }
                 });
+            }
+
+            function deletePlan(prop_id) {  // 계획 전체 삭제 기능
+                if(confirm("계획을 전체삭제하시겠습니까?")==true){
+                    $.ajax({
+                        type: 'POST',
+                        url: '/api/deletePlan',
+                        data: {'prop': prop_id.id},
+                        headers: {'token_give': $.cookie('token')},
+                        success: function (response) {
+                            if (response['result'] == 'success') {
+                                alert('계획 삭제가 완료되었습니다');
+                                window.location.reload();
+                            } else if (response['result'] == 'fail time') {
+                                alert(response['result']);
+                                window.location.href = '/login'
+                            }
+                        }
+                    });
+                }
+                else{
+                    return false;
+                }
             }
         </script>
 
@@ -775,7 +808,7 @@
             </div>
 
             <div id="container" >
-              <ul id="checklist" style="display:none">
+              <ul id="checklist" style="display:none;width:500px">
 <!--                  d="plan" placeholder="계획을 입력하세요"><button onclick="setPlan()" class="btn btn-dark">입력</button><button onclick="revisePlan()" class="btn btn-dark">삭제</button></li>-->
 
 <!--                  <input t<li>&nbsp;</li>-->

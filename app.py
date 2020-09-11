@@ -344,7 +344,7 @@ def api_setPlan():
 
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        db.plan.insert_one({'id':payload['id'],'plan':plan_receive,'prop':prop_receive,'checked':0})
+        db.plan.insert_one({'id':payload['id'],'plan':plan_receive,'prop':prop_receive,'checked':'0'})
         return jsonify({'result':'success'})
 
     except jwt.ExpiredSignatureError:
@@ -373,14 +373,12 @@ def api_boxCheck():
     check_receive = request.form['checked']
     plan_receive = request.form['plan']
 
-    print(check_receive)     #이건 str
-
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        if check_receive == 0: #체크 해제 할 경우
-            db.plan.update_one({'id': payload['id'],'prop':prop_receive, 'plan':plan_receive},{'$set': {'checked':int(check_receive)}})
-        elif check_receive == 1: #체크 선택한 경우
-            db.plan.update_one({'id': payload['id'],'prop':prop_receive, 'plan':plan_receive},{'$set': {'checked':int(check_receive)}})
+        if check_receive == '0': #체크 해제 할 경우
+            db.plan.update_one({'id': payload['id'],'prop':prop_receive, 'plan':plan_receive},{'$set': {'checked':check_receive}})
+        elif check_receive == '1': #체크 선택한 경우
+            db.plan.update_one({'id': payload['id'],'prop':prop_receive, 'plan':plan_receive},{'$set': {'checked':check_receive}})
 
         return jsonify({'result': 'success'})
 
@@ -388,6 +386,21 @@ def api_boxCheck():
         return jsonify({'result': 'fail time'})
 
 @app.route('/api/revisePlan', methods=['POST'])
+def api_revisePlan():
+    token_receive = request.headers['token_give']
+    prop_receive = request.form['prop']
+    revise_receive = request.form['revise']
+    plan_receive = request.form['plan']
+
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        db.plan.update_one({'id': payload['id'],'prop':prop_receive,'plan':plan_receive},{'$set': {'plan':revise_receive}})
+        return jsonify({'result': 'success'})
+
+    except jwt.ExpiredSignatureError:
+        return jsonify({'result': 'fail time'})
+
+@app.route('/api/deletePlan', methods=['POST'])
 def api_deletePlan():
     token_receive = request.headers['token_give']
     prop_receive = request.form['prop']
